@@ -21,3 +21,4 @@ spring:
           github:
             client-id: eebcd505641456602131
             client-secret: 72c40574b2498f4188c7cc631406a09e9e0a91cc
+#Adding these properties for at least one client will enable the Oauth2ClientAutoConfiguration class which sets up all the necessary beans.

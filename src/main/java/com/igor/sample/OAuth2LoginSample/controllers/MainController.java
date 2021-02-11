@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,17 +26,36 @@ import java.util.Map;
 public class MainController {
 
     @Autowired
-    private OAuth2AuthorizedClientService authorizedClientService;
+    private OAuth2AuthorizedClientService authorizedCrelientService;
 
-    @RequestMapping("/")
-    public String index(Model model, OAuth2AuthenticationToken authentication) {
-        OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
+    @RequestMapping("/1")
+    public String index1(Model model, OAuth2AuthenticationToken authentication) {
+        //OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
         model.addAttribute("userName", authentication.getName());
-        model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
+        //model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
         return "index";
     }
 
-    @RequestMapping("/userinfo")
+    private static String authorizationRequestBaseUri="oauth2/authorization";
+    Map <String, String> oauth2AuthenticationUrls = new HashMap<>();
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+    @RequestMapping("/oauth_login")
+    public String getLoginPage(Model model){
+
+        model.addAttribute("urls",clientRegistrationRepository);
+       return "oauth_login";
+    }
+
+    @RequestMapping("/")
+    public String index(Model model) {
+        //OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
+        //model.addAttribute("userName", authentication.getName());
+        //model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
+        return "index";
+    }
+
+    /*@RequestMapping("/userinfo")
     public String userinfo(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
         Map userAttributes = Collections.emptyMap();
@@ -54,12 +75,14 @@ public class MainController {
         return "userinfo";
     }
 
-    private OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken authentication) {
+     */
+
+    /*private OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken authentication) {
         return this.authorizedClientService.loadAuthorizedClient(
                 authentication.getAuthorizedClientRegistrationId(), authentication.getName());
-    }
+    }*/
 
-    private ExchangeFilterFunction oauth2Credentials(OAuth2AuthorizedClient authorizedClient) {
+    /*private ExchangeFilterFunction oauth2Credentials(OAuth2AuthorizedClient authorizedClient) {
         return ExchangeFilterFunction.ofRequestProcessor(
                 clientRequest -> {
                     ClientRequest authorizedRequest = ClientRequest.from(clientRequest)
@@ -67,5 +90,5 @@ public class MainController {
                             .build();
                     return Mono.just(authorizedRequest);
                 });
-    }
+    }*/
 }
