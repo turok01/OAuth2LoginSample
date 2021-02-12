@@ -1,10 +1,12 @@
 package com.igor.sample.OAuth2LoginSample.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,8 +44,15 @@ public class MainController {
     private ClientRegistrationRepository clientRegistrationRepository;
     @RequestMapping("/oauth_login")
     public String getLoginPage(Model model){
-
-        model.addAttribute("urls",clientRegistrationRepository);
+        Iterable <ClientRegistration> clientRegistrations = null;
+        ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository).as(Iterable.class);
+        if (type != ResolvableType.NONE &&
+            ClientRegistration.class.isAssignableFrom(type.resolveGenerics()[0])){
+            clientRegistrations = (Iterable<ClientRegistration>)clientRegistrationRepository;
+        }
+        clientRegistrations.forEach(registration -> oauth2AuthenticationUrls.put(registration.getClientName(),
+                authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
+        model.addAttribute("urls",oauth2AuthenticationUrls);
        return "oauth_login";
     }
 
