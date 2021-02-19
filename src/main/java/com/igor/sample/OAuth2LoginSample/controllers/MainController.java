@@ -1,8 +1,13 @@
 package com.igor.sample.OAuth2LoginSample.controllers;
 
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -28,7 +33,7 @@ import java.util.Map;
 public class MainController {
 
     @Autowired
-    private OAuth2AuthorizedClientService authorizedCrelientService;
+    private OAuth2AuthorizedClientService authorizedClientService;
 
     @RequestMapping("/1")
     public String index1(Model model, OAuth2AuthenticationToken authentication) {
@@ -58,12 +63,13 @@ public class MainController {
     @RequestMapping("/")
     public String index(Model model) {
         //OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
+
         //model.addAttribute("userName", authentication.getName());
         //model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
         return "index";
     }
 
-    /*@RequestMapping("/userinfo")
+    @RequestMapping("/userinfo")
     public String userinfo(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
         Map userAttributes = Collections.emptyMap();
@@ -83,14 +89,14 @@ public class MainController {
         return "userinfo";
     }
 
-     */
 
-    /*private OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken authentication) {
+
+    private OAuth2AuthorizedClient getAuthorizedClient(OAuth2AuthenticationToken authentication) {
         return this.authorizedClientService.loadAuthorizedClient(
                 authentication.getAuthorizedClientRegistrationId(), authentication.getName());
-    }*/
+    }
 
-    /*private ExchangeFilterFunction oauth2Credentials(OAuth2AuthorizedClient authorizedClient) {
+    private ExchangeFilterFunction oauth2Credentials(OAuth2AuthorizedClient authorizedClient) {
         return ExchangeFilterFunction.ofRequestProcessor(
                 clientRequest -> {
                     ClientRequest authorizedRequest = ClientRequest.from(clientRequest)
@@ -98,5 +104,5 @@ public class MainController {
                             .build();
                     return Mono.just(authorizedRequest);
                 });
-    }*/
+    }
 }
